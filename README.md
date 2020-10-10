@@ -57,6 +57,7 @@ Example use:
  * label-position: may take one of the values: ["top","top-left","top-right","middle","middle-left","middle-right","bottom","bottom-left","bottom-right"],
  * connected: if present, all dots will be connected. If its value is "animated", the line drawing will be animated.  Value "none" won't connect dots.
  * color-scheme: chose a set of colors from https://github.com/d3/d3-scale-chromatic#schemeAccent (default is schemeTableau10)
+ * color: overrides the `color-scheme` attribute to specify a single color for path, text & dots.
  * line-type: https://github.com/d3/d3-shape#Curves
  * json: stringified json or path to JSON file structured as:
 

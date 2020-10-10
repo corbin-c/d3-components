@@ -24,6 +24,10 @@ class Scatterplot extends D3Component {
       }
     },
     {
+      attribute: "color",
+      defaultValue: "none"
+    },
+    {
       attribute: "labels-value",
       property: "labelsValue",
       allowedValues: ["x","y","xy","label"],
@@ -118,6 +122,13 @@ class Scatterplot extends D3Component {
       .attr("text-anchor", this.labelPosition["text-anchor"])
       .attr("dy", this.labelPosition["dy"] || 0)
       .attr("dx", this.labelPosition["dx"] || 0)
+  }
+  updateColor() {
+    if (this.color != "none") {
+      this.addStyleRule("svg path { stroke: "+this.color+"; }");
+      this.addStyleRule(".dot circle { fill: "+this.color+"; }");
+      this.addStyleRule(".dot text { fill: "+this.color+"; }");
+    }
   }
   updateLineType() {
     try {
