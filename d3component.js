@@ -100,7 +100,6 @@ class D3Component extends HTMLElement {
     try {
       this["update"+prop](newValue);
     } catch(e) {
-      console.log(e,prop);
       this.makeGraph();
     }
   }

@@ -262,41 +262,45 @@ class Scatterplot extends D3Component {
     this.updateTicksY();
   }
   updateTicksX() {
-    let axisX = this.svg.select(".axis-x")
-    axisX.transition("axis")
-        .duration(this.duration)
-        .ease(d3.easeLinear)
-        .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-        .call(d3.axisBottom(this.x).ticks(...this.ticksX))
-    axisX.call(g => g.select(".domain").remove())
-          .call(g => g.selectAll(".tick line")
-            .attr("stroke-opacity", 0.1)
-            .transition("axis")
-              .duration(this.duration)
-              .ease(d3.easeLinear)
-              .attr("y2", -this.height))
-          .call(g => g.select(".labelx")
-            .transition("axis")
-              .duration(this.duration)
-              .ease(d3.easeLinear)
-              .attr("x", this.width - 4));
-    [...this.shadow.querySelectorAll(".axis-x line+line")].map(e => e.remove());
-  }
-  updateTicksY() {
-    let axisY = this.svg.select(".axis-y")
-    axisY.transition("axis")
-      .duration(this.duration)
-      .ease(d3.easeLinear)
-        .attr("transform", `translate(${this.margin.left},0)`)
-        .call(d3.axisLeft(this.y).ticks(...this.ticksY))
-    axisY.call(g => g.select(".domain").remove())
-      .call(g => g.selectAll(".tick line")
-        .attr("stroke-opacity", 0.1)
-        .transition("axis")
+    if (typeof this.svg !== "undefined") {
+      let axisX = this.svg.select(".axis-x")
+      axisX.transition("axis")
           .duration(this.duration)
           .ease(d3.easeLinear)
-          .attr("x2", this.width));
-    [...this.shadow.querySelectorAll(".axis-y line+line")].map(e => e.remove());    
+          .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+          .call(d3.axisBottom(this.x).ticks(...this.ticksX))
+      axisX.call(g => g.select(".domain").remove())
+            .call(g => g.selectAll(".tick line")
+              .attr("stroke-opacity", 0.1)
+              .transition("axis")
+                .duration(this.duration)
+                .ease(d3.easeLinear)
+                .attr("y2", -this.height))
+            .call(g => g.select(".labelx")
+              .transition("axis")
+                .duration(this.duration)
+                .ease(d3.easeLinear)
+                .attr("x", this.width - 4));
+      [...this.shadow.querySelectorAll(".axis-x line+line")].map(e => e.remove());
+    }
+  }
+  updateTicksY() {
+    if (typeof this.svg !== "undefined") {
+      let axisY = this.svg.select(".axis-y")
+      axisY.transition("axis")
+        .duration(this.duration)
+        .ease(d3.easeLinear)
+          .attr("transform", `translate(${this.margin.left},0)`)
+          .call(d3.axisLeft(this.y).ticks(...this.ticksY))
+      axisY.call(g => g.select(".domain").remove())
+        .call(g => g.selectAll(".tick line")
+          .attr("stroke-opacity", 0.1)
+          .transition("axis")
+            .duration(this.duration)
+            .ease(d3.easeLinear)
+            .attr("x2", this.width));
+      [...this.shadow.querySelectorAll(".axis-y line+line")].map(e => e.remove());    
+    }
   }
   scaleX() {
     this.x = d3.scaleLinear()
@@ -380,6 +384,7 @@ class Scatterplot extends D3Component {
         let i = oldColumns+j;
         if (this.trace) {
           if (this.trace == "static") {
+            try {
             this.svg.append("path")
               .datum(this.data.data[i])
               .attr("fill", "none")
@@ -389,6 +394,9 @@ class Scatterplot extends D3Component {
               .attr("stroke-linejoin", "round")
               .attr("stroke-linecap", "round")
               .attr("d", this.line)
+            } catch {
+              //svg no ready yet, do nothing
+            }
           } else {
             const l = ((path) => {
               return d3.create("svg:path").attr("d", path).node().getTotalLength();
