@@ -417,14 +417,16 @@ class Scatterplot extends D3Component {
               .attr("stroke-dasharray", `${l},${l}`); 
           }
         }
-        let dots = this.svg.append("g")
-            .attr("fill", this.colors(i))
-            .attr("stroke-width", 8)
-            .attr("stroke", "red")
-            .attr("class", "dotgroup"+i)
-            .attr("stroke-opacity", 0)
-          .selectAll("g")
-          .data(this.data.data[i])
+        if (typeof this.svg !== "undefined") {
+          let dots = this.svg.append("g")
+              .attr("fill", this.colors(i))
+              .attr("stroke-width", 8)
+              .attr("stroke", "red")
+              .attr("class", "dotgroup"+i)
+              .attr("stroke-opacity", 0)
+            .selectAll("g")
+            .data(this.data.data[i]);
+        }
       }
     }
     this.data.columns.map((e,i) => {
