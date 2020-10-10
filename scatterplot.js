@@ -429,45 +429,47 @@ class Scatterplot extends D3Component {
         }
       }
     }
-    this.data.columns.map((e,i) => {
-      let container = this.svg.select(".dotgroup"+i);
-      let dots = container.selectAll(".dot").data(this.data.data[i]);
-      let path = this.svg.selectAll(".trace"+i).datum(this.data.data[i]);
-      path.exit().remove();
-      dots.exit().remove();
-      let g = dots.enter().append("g")
-        .attr("fill", this.colors(i))
-        .attr("stroke-width", 8)
-        .attr("stroke", "red")
-        .attr("stroke-opacity", 0)
-        .attr("class","dot g"+i)
-      g.append("circle")
-        .attr("cx", d => this.x(d.x))
-        .attr("cy", d => this.y(d.y))
-        .attr("r", 2);
-      g.append("g")
-          .attr("font-family", "sans-serif")
-          .attr("font-size", 10)
-          .attr("transform", d => `translate(${this.x(d.x)},${this.y(d.y)})`)
-        .append("text")
-          .text(d => {
-            if ((typeof d.name !== "undefined") && (this.labelsValue == "label")){
-              return d.name
-            } else {
-              if ((this.labelsValue == "x") || (this.labelsValue == "y")) {
-                return d3.format(".2f")(d[this.labelsValue])
-              } else if (this.labelsValue == "xy") {
-                return "x:"+d3.format(".2f")(d.x)+" | y:"+d3.format(".2f")(d.y)
+    if (typeof this.svg !== "undefined") {
+      this.data.columns.map((e,i) => {
+        let container = this.svg.select(".dotgroup"+i);
+        let dots = container.selectAll(".dot").data(this.data.data[i]);
+        let path = this.svg.selectAll(".trace"+i).datum(this.data.data[i]);
+        path.exit().remove();
+        dots.exit().remove();
+        let g = dots.enter().append("g")
+          .attr("fill", this.colors(i))
+          .attr("stroke-width", 8)
+          .attr("stroke", "red")
+          .attr("stroke-opacity", 0)
+          .attr("class","dot g"+i)
+        g.append("circle")
+          .attr("cx", d => this.x(d.x))
+          .attr("cy", d => this.y(d.y))
+          .attr("r", 2);
+        g.append("g")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10)
+            .attr("transform", d => `translate(${this.x(d.x)},${this.y(d.y)})`)
+          .append("text")
+            .text(d => {
+              if ((typeof d.name !== "undefined") && (this.labelsValue == "label")){
+                return d.name
               } else {
-                return undefined;
+                if ((this.labelsValue == "x") || (this.labelsValue == "y")) {
+                  return d3.format(".2f")(d[this.labelsValue])
+                } else if (this.labelsValue == "xy") {
+                  return "x:"+d3.format(".2f")(d.x)+" | y:"+d3.format(".2f")(d.y)
+                } else {
+                  return undefined;
+                }
               }
-            }
-          })
-          .attr("text-anchor", this.labelPosition["text-anchor"])
-          .attr("dy", this.labelPosition["dy"] || 0)
-          .attr("dx", this.labelPosition["dx"] || 0)
-          .attr("fill",this.colors(i))
-    });
+            })
+            .attr("text-anchor", this.labelPosition["text-anchor"])
+            .attr("dy", this.labelPosition["dy"] || 0)
+            .attr("dx", this.labelPosition["dx"] || 0)
+            .attr("fill",this.colors(i))
+      });
+    }
   }
   async updateJson() {
     let data = {};
