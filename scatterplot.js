@@ -117,7 +117,6 @@ class Scatterplot extends D3Component {
   }
   updateLabelPosition() {
     let dots = this.svg.selectAll(".dot");
-    console.log(dots);
     dots.select("text")
       .attr("text-anchor", this.labelPosition["text-anchor"])
       .attr("dy", this.labelPosition["dy"] || 0)
@@ -164,7 +163,6 @@ class Scatterplot extends D3Component {
     });
   }
   updateLabelStyle() {
-    console.log(this.labelStyle);
     if (this.labelStyle == "none") {
       this.addStyleRule(".dot text { visibility: hidden; }");
       this.removeStyleRule(".dot:hover text { visibility: visible; }");      
@@ -262,45 +260,41 @@ class Scatterplot extends D3Component {
     this.updateTicksY();
   }
   updateTicksX() {
-    if (typeof this.svg !== "undefined") {
-      let axisX = this.svg.select(".axis-x")
-      axisX.transition("axis")
-          .duration(this.duration)
-          .ease(d3.easeLinear)
-          .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
-          .call(d3.axisBottom(this.x).ticks(...this.ticksX))
-      axisX.call(g => g.select(".domain").remove())
-            .call(g => g.selectAll(".tick line")
-              .attr("stroke-opacity", 0.1)
-              .transition("axis")
-                .duration(this.duration)
-                .ease(d3.easeLinear)
-                .attr("y2", -this.height))
-            .call(g => g.select(".labelx")
-              .transition("axis")
-                .duration(this.duration)
-                .ease(d3.easeLinear)
-                .attr("x", this.width - 4));
-      [...this.shadow.querySelectorAll(".axis-x line+line")].map(e => e.remove());
-    }
-  }
-  updateTicksY() {
-    if (typeof this.svg !== "undefined") {
-      let axisY = this.svg.select(".axis-y")
-      axisY.transition("axis")
+    let axisX = this.svg.select(".axis-x")
+    axisX.transition("axis")
         .duration(this.duration)
         .ease(d3.easeLinear)
-          .attr("transform", `translate(${this.margin.left},0)`)
-          .call(d3.axisLeft(this.y).ticks(...this.ticksY))
-      axisY.call(g => g.select(".domain").remove())
-        .call(g => g.selectAll(".tick line")
-          .attr("stroke-opacity", 0.1)
-          .transition("axis")
-            .duration(this.duration)
-            .ease(d3.easeLinear)
-            .attr("x2", this.width));
-      [...this.shadow.querySelectorAll(".axis-y line+line")].map(e => e.remove());    
-    }
+        .attr("transform", `translate(0,${this.height - this.margin.bottom})`)
+        .call(d3.axisBottom(this.x).ticks(...this.ticksX))
+    axisX.call(g => g.select(".domain").remove())
+          .call(g => g.selectAll(".tick line")
+            .attr("stroke-opacity", 0.1)
+            .transition("axis")
+              .duration(this.duration)
+              .ease(d3.easeLinear)
+              .attr("y2", -this.height))
+          .call(g => g.select(".labelx")
+            .transition("axis")
+              .duration(this.duration)
+              .ease(d3.easeLinear)
+              .attr("x", this.width - 4));
+    [...this.shadow.querySelectorAll(".axis-x line+line")].map(e => e.remove());
+  }
+  updateTicksY() {
+    let axisY = this.svg.select(".axis-y")
+    axisY.transition("axis")
+      .duration(this.duration)
+      .ease(d3.easeLinear)
+        .attr("transform", `translate(${this.margin.left},0)`)
+        .call(d3.axisLeft(this.y).ticks(...this.ticksY))
+    axisY.call(g => g.select(".domain").remove())
+      .call(g => g.selectAll(".tick line")
+        .attr("stroke-opacity", 0.1)
+        .transition("axis")
+          .duration(this.duration)
+          .ease(d3.easeLinear)
+          .attr("x2", this.width));
+    [...this.shadow.querySelectorAll(".axis-y line+line")].map(e => e.remove());    
   }
   scaleX() {
     this.x = d3.scaleLinear()
@@ -384,7 +378,6 @@ class Scatterplot extends D3Component {
         let i = oldColumns+j;
         if (this.trace) {
           if (this.trace == "static") {
-            try {
             this.svg.append("path")
               .datum(this.data.data[i])
               .attr("fill", "none")
@@ -394,9 +387,6 @@ class Scatterplot extends D3Component {
               .attr("stroke-linejoin", "round")
               .attr("stroke-linecap", "round")
               .attr("d", this.line)
-            } catch {
-              //svg no ready yet, do nothing
-            }
           } else {
             const l = ((path) => {
               return d3.create("svg:path").attr("d", path).node().getTotalLength();
@@ -417,59 +407,55 @@ class Scatterplot extends D3Component {
               .attr("stroke-dasharray", `${l},${l}`); 
           }
         }
-        if (typeof this.svg !== "undefined") {
-          let dots = this.svg.append("g")
-              .attr("fill", this.colors(i))
-              .attr("stroke-width", 8)
-              .attr("stroke", "red")
-              .attr("class", "dotgroup"+i)
-              .attr("stroke-opacity", 0)
-            .selectAll("g")
-            .data(this.data.data[i]);
-        }
+        let dots = this.svg.append("g")
+            .attr("fill", this.colors(i))
+            .attr("stroke-width", 8)
+            .attr("stroke", "red")
+            .attr("class", "dotgroup"+i)
+            .attr("stroke-opacity", 0)
+          .selectAll("g")
+          .data(this.data.data[i])
       }
     }
-    if (typeof this.svg !== "undefined") {
-      this.data.columns.map((e,i) => {
-        let container = this.svg.select(".dotgroup"+i);
-        let dots = container.selectAll(".dot").data(this.data.data[i]);
-        let path = this.svg.selectAll(".trace"+i).datum(this.data.data[i]);
-        path.exit().remove();
-        dots.exit().remove();
-        let g = dots.enter().append("g")
-          .attr("fill", this.colors(i))
-          .attr("stroke-width", 8)
-          .attr("stroke", "red")
-          .attr("stroke-opacity", 0)
-          .attr("class","dot g"+i)
-        g.append("circle")
-          .attr("cx", d => this.x(d.x))
-          .attr("cy", d => this.y(d.y))
-          .attr("r", 2);
-        g.append("g")
-            .attr("font-family", "sans-serif")
-            .attr("font-size", 10)
-            .attr("transform", d => `translate(${this.x(d.x)},${this.y(d.y)})`)
-          .append("text")
-            .text(d => {
-              if ((typeof d.name !== "undefined") && (this.labelsValue == "label")){
-                return d.name
+    this.data.columns.map((e,i) => {
+      let container = this.svg.select(".dotgroup"+i);
+      let dots = container.selectAll(".dot").data(this.data.data[i]);
+      let path = this.svg.selectAll(".trace"+i).datum(this.data.data[i]);
+      path.exit().remove();
+      dots.exit().remove();
+      let g = dots.enter().append("g")
+        .attr("fill", this.colors(i))
+        .attr("stroke-width", 8)
+        .attr("stroke", "red")
+        .attr("stroke-opacity", 0)
+        .attr("class","dot g"+i)
+      g.append("circle")
+        .attr("cx", d => this.x(d.x))
+        .attr("cy", d => this.y(d.y))
+        .attr("r", 2);
+      g.append("g")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", 10)
+          .attr("transform", d => `translate(${this.x(d.x)},${this.y(d.y)})`)
+        .append("text")
+          .text(d => {
+            if ((typeof d.name !== "undefined") && (this.labelsValue == "label")){
+              return d.name
+            } else {
+              if ((this.labelsValue == "x") || (this.labelsValue == "y")) {
+                return d3.format(".2f")(d[this.labelsValue])
+              } else if (this.labelsValue == "xy") {
+                return "x:"+d3.format(".2f")(d.x)+" | y:"+d3.format(".2f")(d.y)
               } else {
-                if ((this.labelsValue == "x") || (this.labelsValue == "y")) {
-                  return d3.format(".2f")(d[this.labelsValue])
-                } else if (this.labelsValue == "xy") {
-                  return "x:"+d3.format(".2f")(d.x)+" | y:"+d3.format(".2f")(d.y)
-                } else {
-                  return undefined;
-                }
+                return undefined;
               }
-            })
-            .attr("text-anchor", this.labelPosition["text-anchor"])
-            .attr("dy", this.labelPosition["dy"] || 0)
-            .attr("dx", this.labelPosition["dx"] || 0)
-            .attr("fill",this.colors(i))
-      });
-    }
+            }
+          })
+          .attr("text-anchor", this.labelPosition["text-anchor"])
+          .attr("dy", this.labelPosition["dy"] || 0)
+          .attr("dx", this.labelPosition["dx"] || 0)
+          .attr("fill",this.colors(i))
+    });
   }
   async updateJson() {
     let data = {};
@@ -496,10 +482,12 @@ class Scatterplot extends D3Component {
     });
     this.data = { data, extent , columns };
     this.isReady();
-    this.updateData(oldColumns);
-    this.updateAxis();
-    this.updatePlot();
-    this.updateLabelsValue();
+    if (typeof this.svg !== "undefined") {
+      this.updateData(oldColumns);
+      this.updateAxis();
+      this.updatePlot();
+      this.updateLabelsValue();
+    }
   }
   async updateCsv() {
     let data = await d3.csv(this.csv);
